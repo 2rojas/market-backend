@@ -12,6 +12,7 @@ const ordersTable = pgTable("orders", {
     userId: uuid().references(() => userTable.id, { onDelete: 'set null' }),
     totalAmount: numeric().notNull(),
     status: varchar({ length: 255 }).notNull(),
+    idempotencyKey: varchar({ length: 255 }).unique().notNull(),
     createdAt: timestamp({ withTimezone: true, mode: "date" }).defaultNow(),
     updatedAt: timestamp({ withTimezone: true, mode: "date" }).defaultNow(),
 })
