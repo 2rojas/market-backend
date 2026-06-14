@@ -1,0 +1,10 @@
+node_modules
+.git
+.env
+dist
+build
+postgres_data
+migrations
+Dockerfile
+docker-compose.yml
+bun.lockb
