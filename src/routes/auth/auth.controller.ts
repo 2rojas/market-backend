@@ -227,4 +227,8 @@ const refreshController = factory.createHandlers(async (c: Context) => {
 	}
 });
 
-export { signInController, signupController };
+export {
+	signInController,
+	signupController,
+	refreshController
+};

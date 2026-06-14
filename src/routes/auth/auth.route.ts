@@ -8,7 +8,9 @@ import { insertUserSchema } from "@/db/schema/user";
 import {
 	signInController,
 	signupController,
+	refreshController
 } from "@/routes/auth/auth.controller";
+import z from "zod";
 
 const authRouter = new Hono();
 
@@ -21,6 +23,12 @@ authRouter.post(
 	"/signup",
 	zValidator("json", insertUserSchema),
 	...signupController,
+);
+
+authRouter.post(
+	"/refresh",
+	zValidator("json", z.object({ refreshToken: z.string() })),
+	...refreshController,
 );
 
 export default authRouter;
