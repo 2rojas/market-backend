@@ -1,13 +1,12 @@
 // Schemes and DB
-import db from "@/db/connect";
-import productTable from "@/db/schema/products";
-import { eq } from "drizzle-orm";
 
+import { eq } from "drizzle-orm";
 //Types
 import type { Context } from "hono";
-
 //Factory
 import { createFactory } from "hono/factory";
+import db from "@/db/connect";
+import productTable from "@/db/schema/products";
 
 const factory = createFactory();
 
@@ -47,8 +46,8 @@ const getProduct = factory.createHandlers(async (c: Context) => {
 	}
 
 	if (limitStr && pageStr) {
-		const limit = parseInt(limitStr) || 50;
-		const page = parseInt(pageStr) || 1;
+		const limit = parseInt(limitStr, 10) || 50;
+		const page = parseInt(pageStr, 10) || 1;
 
 		// CORRECCIÓN DE BUG: El offset es (página - 1) * límite, no el número de la página directo
 		const offset = (page - 1) * limit;
@@ -70,7 +69,7 @@ const getProductById = factory.createHandlers(async (c: Context) => {
 	const [product] = await db
 		.select()
 		.from(productTable)
-		.where(eq(productTable.id, parseInt(id)));
+		.where(eq(productTable.id, parseInt(id, 10)));
 
 	if (!product) {
 		return c.json({ message: "Product not found" }, 404);
@@ -134,8 +133,8 @@ const updateProduct = factory.createHandlers(async (c: Context) => {
 
 export {
 	createProduct,
+	deleteProduct,
 	getProduct,
 	getProductById,
-	deleteProduct,
 	updateProduct,
 };

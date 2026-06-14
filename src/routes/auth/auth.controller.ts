@@ -1,18 +1,17 @@
 //Types
-import type { Context } from "hono";
-
-//Schemas
-import userTable from "@/db/schema/user";
-import type { insertUserSchema } from "@/db/schema/user";
-import client from "@/db/redis";
 
 //Utils
 import { eq } from "drizzle-orm";
-import db from "@/db/connect";
-import type z from "zod";
-import { sign, verify } from "hono/jwt";
-import { env } from "@/config/env";
+import type { Context } from "hono";
 import { createFactory } from "hono/factory";
+import { sign, verify } from "hono/jwt";
+import type z from "zod";
+import { env } from "@/config/env";
+import db from "@/db/connect";
+import client from "@/db/redis";
+import type { insertUserSchema } from "@/db/schema/user";
+//Schemas
+import userTable from "@/db/schema/user";
 
 const factory = createFactory();
 
@@ -167,7 +166,9 @@ const refreshController = factory.createHandlers(async (c: Context) => {
 		const { refreshToken } = c.req.valid("json" as any) as {
 			refreshToken: string;
 		};
-		const token = (await verify(refreshToken, env.JWT_REFRESH_SECRET,
+		const token = (await verify(
+			refreshToken,
+			env.JWT_REFRESH_SECRET,
 			"HS256",
 		)) as {
 			sub: string;
@@ -175,12 +176,12 @@ const refreshController = factory.createHandlers(async (c: Context) => {
 			exp: number;
 		};
 
-        const isTokenRedis = await client.get(`token:${token.sub}`)
-        if(!isTokenRedis || isTokenRedis !== refreshToken){
-            return c.json({ message: "Invalid token", status: 401 }, 401)
-        }
+		const isTokenRedis = await client.get(`token:${token.sub}`);
+		if (!isTokenRedis || isTokenRedis !== refreshToken) {
+			return c.json({ message: "Invalid token", status: 401 }, 401);
+		}
 
-		const [ user ] = await db
+		const [user] = await db
 			.select()
 			.from(userTable)
 			.where(eq(userTable.id, token.sub))
@@ -227,8 +228,4 @@ const refreshController = factory.createHandlers(async (c: Context) => {
 	}
 });
 
-export {
-	signInController,
-	signupController,
-	refreshController
-};
+export { refreshController, signInController, signupController };

@@ -1,20 +1,17 @@
-import authMiddleware from "@/middlewares/auth";
+// Validators
+import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
-
+// Schemas
+import { insertProductSchema } from "@/db/schema/products";
+import authMiddleware from "@/middlewares/auth";
 // Controllers
 import {
 	createProduct,
+	deleteProduct,
 	getProduct,
 	getProductById,
-	deleteProduct,
 	updateProduct,
 } from "./product.controller";
-
-// Validators
-import { zValidator } from "@hono/zod-validator";
-
-// Schemas
-import { insertProductSchema } from "@/db/schema/products";
 
 const productRouter = new Hono();
 

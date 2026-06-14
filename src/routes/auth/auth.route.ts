@@ -1,19 +1,17 @@
 // Hono
-import { Hono } from "hono";
 
 // Validators
 import { zValidator } from "@hono/zod-validator";
-
+import { Hono } from "hono";
+import z from "zod";
 // Schemas
 import { insertUserSchema } from "@/db/schema/user";
-
 // Controllers
 import {
+	refreshController,
 	signInController,
 	signupController,
-	refreshController
 } from "@/routes/auth/auth.controller";
-import z from "zod";
 
 const authRouter = new Hono();
 

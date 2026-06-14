@@ -1,8 +1,8 @@
-import { pgTable, text, integer, uuid, timestamp } from "drizzle-orm/pg-core";
+import { integer, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
-import userTable from "./user";
 import productTable from "./products";
+import userTable from "./user";
 
 const reviewTable = pgTable("reviews", {
 	id: uuid().defaultRandom().primaryKey(),
