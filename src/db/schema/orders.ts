@@ -16,7 +16,7 @@ const ordersTable = pgTable("orders", {
 	id: uuid().defaultRandom().primaryKey(),
 	userId: uuid().references(() => userTable.id, { onDelete: "set null" }),
 	totalAmount: numeric().notNull(),
-	status: varchar({ length: 255 }).notNull(),
+	status: varchar({ length: 255 }).notNull().default("PENDING"),
 	idempotencyKey: varchar({ length: 255 }).unique().notNull(),
 	createdAt: timestamp({ withTimezone: true, mode: "date" }).defaultNow(),
 	updatedAt: timestamp({ withTimezone: true, mode: "date" }).defaultNow(),

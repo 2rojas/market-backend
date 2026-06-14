@@ -8,7 +8,9 @@ import z from "zod";
 import { insertUserSchema } from "@/db/schema/user";
 // Controllers
 import {
+	forgotPasswordController,
 	refreshController,
+	resetPasswordController,
 	signInController,
 	signupController,
 } from "@/routes/auth/auth.controller";
@@ -30,6 +32,19 @@ authRouter.post(
 	"/refresh",
 	zValidator("json", z.object({ refreshToken: z.string() })),
 	...refreshController,
+);
+
+authRouter.post(
+	"/forgot-password",
+	zValidator("json", z.object({ email: z.email() })),
+	...forgotPasswordController,
+);
+
+authRouter.post(
+	"/reset-password/:token",
+	zValidator("param", z.object({ token: z.string() })),
+	zValidator("json", z.object({ password: z.string() })),
+	...resetPasswordController, 
 );
 
 export default authRouter;

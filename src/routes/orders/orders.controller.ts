@@ -152,9 +152,49 @@ const cancelOrderController = factory.createHandlers(async (c: Context) => {
     }
 })
 
+const deliverOrderController = factory.createHandlers(async (c: Context) => {
+    try {
+
+        const { id } = c.req.param();
+        const user = c.get("user");
+
+        const order = await db.select().from(orderTable).where(and(eq(orderTable.id, id), eq(orderTable.userId, user.sub))).limit(1);
+
+        if (!order) return c.json({ message: "Order not found", status: 404 }, 404);
+
+        await db.update(orderTable).set({ status: "DELIVERED" }).where(eq(orderTable.id, id));
+
+        return c.json({ message: "Order delivered successfully", status: 200 }, 200);
+    } catch (error) {
+        console.log(error);
+        return c.json({ message: "Internal server error", status: 500 }, 500);
+    }
+})
+
+const shipOrderController = factory.createHandlers(async (c: Context) => {
+    try {
+
+        const { id } = c.req.param();
+        const user = c.get("user");
+
+        const order = await db.select().from(orderTable).where(and(eq(orderTable.id, id), eq(orderTable.userId, user.sub))).limit(1);
+
+        if (!order) return c.json({ message: "Order not found", status: 404 }, 404);
+
+        await db.update(orderTable).set({ status: "SHIPPED" }).where(eq(orderTable.id, id));
+
+        return c.json({ message: "Order shipped successfully", status: 200 }, 200);
+    } catch (error) {
+        console.log(error);
+        return c.json({ message: "Internal server error", status: 500 }, 500);
+    }
+})
+
 export {
 	createOrderController,
 	getAllOrdersController,
 	getOrderByIdController,
 	cancelOrderController,
+    deliverOrderController,
+    shipOrderController
 };

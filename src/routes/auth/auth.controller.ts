@@ -228,4 +228,69 @@ const refreshController = factory.createHandlers(async (c: Context) => {
 	}
 });
 
-export { refreshController, signInController, signupController };
+const forgotPasswordController = factory.createHandlers(async (c: Context) => {
+	try {
+		const { email } = c.req.valid("json")
+
+		const [user] = await db.select().from(userTable).where(eq(userTable.email, email)).limit(1)
+
+		if (!user) return c.json({ message: "User not found", status: 404 }, 404)
+
+	   const token = await sign(
+		{
+			sub: user.id,
+			exp: Math.floor(Date.now() / 1000) + 60 * 15, //15 Minutos
+		},
+		env.JWT_SECRET,
+		"HS256",
+	   )
+
+		client.set(`resetToken:${user.id}`, token, "EX", 60 * 15)
+	   	
+		// Si tenemos configurado un servicio de envio de correos, descomentar la siguiente linea :)
+
+		//await sendResetPasswordEmail(email, token)
+
+		return c.json({ message: "Reset email sent", status: 200 }, 200)
+
+	} catch (error) {
+		console.error(error)
+		return c.json({ message: "Internal server error", status: 500 }, 500)		
+	}
+})
+
+const resetPasswordController = factory.createHandlers(async (c: Context) => {
+	try {
+		const token = c.req.param("token") as string
+		const { password } = c.req.valid("json")
+
+		// Verificar validez del token
+		const decodedTOken = await verify(token, env.JWT_SECRET, "HS256") as {
+			sub: string
+			exp: number
+		}
+
+		const isTokenRedis = await client.get(`resetToken:${decodedTOken.sub}`)
+		if (!isTokenRedis || isTokenRedis !== token) {
+			return c.json({ message: "Invalid token", status: 401 }, 401)
+		}
+
+		const hashedPassword = await Bun.password.hash(password, {
+			algorithm: "bcrypt",
+			cost: 10,
+		})
+
+		await db.update(userTable).set({ password: hashedPassword }).where(eq(userTable.id, decodedTOken.sub))
+
+		//Eliminar token de Redis
+		await client.del(`resetToken:${decodedTOken.sub}`)
+		
+		return c.json({ message: "Password reset successfully", status: 200 }, 200)
+		
+	} catch (error) {
+		console.error(error)
+		return c.json({ message: "Internal server error", status: 500 }, 500)
+	}
+})
+
+export { refreshController, signInController, signupController, forgotPasswordController, resetPasswordController };

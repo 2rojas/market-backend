@@ -11,6 +11,8 @@ import {
 	getAllOrdersController,
 	getOrderByIdController,
 	cancelOrderController,
+    deliverOrderController,
+    shipOrderController
 } from "@/routes/orders/orders.controller";
 
 const orderRouter = new Hono();
@@ -22,7 +24,11 @@ orderRouter.post(
 	...createOrderController,
 );
 
-orderRouter.get("/", authMiddleware, ...getAllOrdersController);
+orderRouter.get(
+    "/", 
+    authMiddleware, 
+    ...getAllOrdersController
+);
 
 orderRouter.get(
 	"/:id",
@@ -36,6 +42,20 @@ orderRouter.patch(
 	authMiddleware,
 	zValidator("param", z.object({ id: z.uuid() })),
 	...cancelOrderController,
+);
+
+orderRouter.patch(
+	"/:id/deliver",
+	authMiddleware,
+	zValidator("param", z.object({ id: z.uuid() })),
+	...deliverOrderController,
+);
+
+orderRouter.patch(
+	"/:id/ship",
+	authMiddleware,
+	zValidator("param", z.object({ id: z.uuid() })),
+	...shipOrderController,
 );
 
 export default orderRouter;
