@@ -1,10 +1,13 @@
+// Hono
 import { Hono } from "hono";
+
+// Validators
 import { zValidator } from "@hono/zod-validator";
 
-//Schemas
+// Schemas
 import { insertUserSchema } from "@/db/schema/user";
 
-//Controller
+// Controllers
 import {
 	signInController,
 	signupController,

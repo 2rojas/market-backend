@@ -1,5 +1,8 @@
-import "dotenv";
+//Utils
 import { drizzle } from "drizzle-orm/node-postgres";
+
+//Config
+import "dotenv";
 
 const db = drizzle({
 	connection: {
